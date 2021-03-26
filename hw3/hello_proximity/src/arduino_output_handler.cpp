@@ -29,23 +29,28 @@ bool initialized = false;
 void HandleOutput(tflite::ErrorReporter* error_reporter, float x_value,
                   float y_value) {
 
-                    bool led_on = true;
+                    static bool led_on = true;
 
   // check if a proximity reading is available
   if (APDS.proximityAvailable()) {
-
+    // read the proximity
+    // - 0   => close
+    // - 255 => far
+    // - -1  => error
     int proximity = APDS.readProximity();
 
-    if (proximity < 180) {
+    if (proximity < 200) {
       led_on = false;
 
       // print value to the Serial Monitor
       Serial.print(proximity);
+      Serial.print("\t:: Hand    Detected\n");
     } else {
       led_on = true;
 
       // print value to the Serial Monitor
       Serial.print(proximity);
+      Serial.print("\t:: Hand Not Detected\n");
     }
   }
 
@@ -64,6 +69,7 @@ void HandleOutput(tflite::ErrorReporter* error_reporter, float x_value,
   int brightness = (int)(127.5f * (y_value + 1));
 
  Serial.print(brightness);
+ Serial.print("\t:: LED\n");
 
   // Set the brightness of the LED. If the specified pin does not support PWM,
   // this will result in the LED being on when y > 127, off otherwise.
